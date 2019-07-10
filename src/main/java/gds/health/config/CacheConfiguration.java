@@ -43,6 +43,10 @@ public class CacheConfiguration {
             createCache(cm, gds.health.domain.User.class.getName());
             createCache(cm, gds.health.domain.Authority.class.getName());
             createCache(cm, gds.health.domain.User.class.getName() + ".authorities");
+            createCache(cm, gds.health.domain.Points.class.getName());
+            createCache(cm, gds.health.domain.Weigth.class.getName());
+            createCache(cm, gds.health.domain.BloodPressure.class.getName());
+            createCache(cm, gds.health.domain.Preferences.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

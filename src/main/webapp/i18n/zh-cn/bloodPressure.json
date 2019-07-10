@@ -1,0 +1,26 @@
+{
+  "twentyOnePointsReactApp": {
+    "bloodPressure": {
+      "home": {
+        "title": "Blood Pressures",
+        "createLabel": "创建新 Blood Pressure",
+        "createOrEditLabel": "创建或编辑 Blood Pressure",
+        "search": "查找 Blood Pressure",
+        "notFound": "No Blood Pressure found"
+      },
+      "created": "Blood Pressure {{ param }} 创建成功",
+      "updated": "Blood Pressure {{ param }} 更新成功",
+      "deleted": "Blood Pressure {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Blood Pressure {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Blood Pressure"
+      },
+      "timestamp": "Timestamp",
+      "systolic": "Systolic",
+      "diastolic": "Diastolic",
+      "user": "User"
+    }
+  }
+}

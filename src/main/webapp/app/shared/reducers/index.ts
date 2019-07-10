@@ -7,6 +7,22 @@ import applicationProfile, { ApplicationProfileState } from './application-profi
 
 import administration, { AdministrationState } from 'app/modules/administration/administration.reducer';
 import userManagement, { UserManagementState } from './user-management';
+// prettier-ignore
+import points, {
+  PointsState
+} from 'app/entities/points/points.reducer';
+// prettier-ignore
+import weigth, {
+  WeigthState
+} from 'app/entities/weigth/weigth.reducer';
+// prettier-ignore
+import bloodPressure, {
+  BloodPressureState
+} from 'app/entities/blood-pressure/blood-pressure.reducer';
+// prettier-ignore
+import preferences, {
+  PreferencesState
+} from 'app/entities/preferences/preferences.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
 
 export interface IRootState {
@@ -15,6 +31,10 @@ export interface IRootState {
   readonly applicationProfile: ApplicationProfileState;
   readonly administration: AdministrationState;
   readonly userManagement: UserManagementState;
+  readonly points: PointsState;
+  readonly weigth: WeigthState;
+  readonly bloodPressure: BloodPressureState;
+  readonly preferences: PreferencesState;
   /* jhipster-needle-add-reducer-type - JHipster will add reducer type here */
   readonly loadingBar: any;
 }
@@ -25,6 +45,10 @@ const rootReducer = combineReducers<IRootState>({
   applicationProfile,
   administration,
   userManagement,
+  points,
+  weigth,
+  bloodPressure,
+  preferences,
   /* jhipster-needle-add-reducer-combine - JHipster will add reducer here */
   loadingBar
 });

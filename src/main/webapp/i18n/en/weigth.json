@@ -1,0 +1,25 @@
+{
+  "twentyOnePointsReactApp": {
+    "weigth": {
+      "home": {
+        "title": "Weigths",
+        "createLabel": "Create a new Weigth",
+        "createOrEditLabel": "Create or edit a Weigth",
+        "search": "Search for Weigth",
+        "notFound": "No Weigth found"
+      },
+      "created": "A new Weigth is created with identifier {{ param }}",
+      "updated": "A Weigth is updated with identifier {{ param }}",
+      "deleted": "A Weigth is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Weigth {{ id }}?"
+      },
+      "detail": {
+        "title": "Weigth"
+      },
+      "timestamp": "Timestamp",
+      "weight": "Weight",
+      "user": "User"
+    }
+  }
+}

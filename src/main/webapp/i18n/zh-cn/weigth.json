@@ -1,0 +1,25 @@
+{
+  "twentyOnePointsReactApp": {
+    "weigth": {
+      "home": {
+        "title": "Weigths",
+        "createLabel": "创建新 Weigth",
+        "createOrEditLabel": "创建或编辑 Weigth",
+        "search": "查找 Weigth",
+        "notFound": "No Weigth found"
+      },
+      "created": "Weigth {{ param }} 创建成功",
+      "updated": "Weigth {{ param }} 更新成功",
+      "deleted": "Weigth {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Weigth {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Weigth"
+      },
+      "timestamp": "Timestamp",
+      "weight": "Weight",
+      "user": "User"
+    }
+  }
+}
