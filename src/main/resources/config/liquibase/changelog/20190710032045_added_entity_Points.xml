@@ -69,7 +69,7 @@
             <column name="meals" type="numeric"/>
             <column name="alcohol" type="numeric"/>
             <column name="notes" type="string"/>
-            <column name="user_id" type="varchar(100)"/>
+            <column name="user_id" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here, do not remove-->
         </loadData>
     </changeSet>
