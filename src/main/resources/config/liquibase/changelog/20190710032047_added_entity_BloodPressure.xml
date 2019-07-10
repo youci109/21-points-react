@@ -60,7 +60,7 @@
             <column name="timestamp" type="datetime"/>
             <column name="systolic" type="numeric"/>
             <column name="diastolic" type="numeric"/>
-            <column name="user_id" type="varchar(100)"/>
+            <column name="user_id" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here, do not remove-->
         </loadData>
     </changeSet>
