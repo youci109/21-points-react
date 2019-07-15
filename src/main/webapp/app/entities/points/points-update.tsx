@@ -1,3 +1,5 @@
+import './point.scss';
+
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
@@ -50,6 +52,9 @@ export class PointsUpdate extends React.Component<IPointsUpdateProps, IPointsUpd
 
   saveEntity = (event, errors, values) => {
     if (errors.length === 0) {
+      values.excercise ? (values.excercise = 1) : (values.excercise = 0);
+      values.meals ? (values.meals = 1) : (values.meals = 0);
+      values.alcohol ? (values.alcohol = 1) : (values.alcohol = 0);
       const { pointsEntity } = this.props;
       const entity = {
         ...pointsEntity,
@@ -110,22 +115,42 @@ export class PointsUpdate extends React.Component<IPointsUpdateProps, IPointsUpd
                   />
                 </AvGroup>
                 <AvGroup>
-                  <Label id="excerciseLabel" for="points-excercise">
-                    <Translate contentKey="twentyOnePointsReactApp.points.excercise">Excercise</Translate>
-                  </Label>
-                  <AvField id="points-excercise" type="string" className="form-control" name="excercise" />
-                </AvGroup>
-                <AvGroup>
-                  <Label id="mealsLabel" for="points-meals">
-                    <Translate contentKey="twentyOnePointsReactApp.points.meals">Meals</Translate>
-                  </Label>
-                  <AvField id="points-meals" type="string" className="form-control" name="meals" />
-                </AvGroup>
-                <AvGroup>
-                  <Label id="alcoholLabel" for="points-alcohol">
-                    <Translate contentKey="twentyOnePointsReactApp.points.alcohol">Alcohol</Translate>
-                  </Label>
-                  <AvField id="points-alcohol" type="string" className="form-control" name="alcohol" />
+                  <span className="checkboxspan">
+                    <AvInput
+                      id="points-excercise"
+                      type="checkbox"
+                      name="excercise"
+                      value={pointsEntity.excercise === 1 && !isNew}
+                      className="checkboxoption"
+                    />
+                    <Label check for="excercise" className="checkboxLable">
+                      <Translate contentKey="twentyOnePointsReactApp.points.excercise">Excercise</Translate>
+                    </Label>
+                  </span>
+                  <span className="checkboxspan">
+                    <AvInput
+                      id="points-meals"
+                      type="checkbox"
+                      name="meals"
+                      value={pointsEntity.meals === 1 && !isNew}
+                      className="checkboxoption"
+                    />
+                    <Label check for="meals" className="checkboxLable">
+                      <Translate contentKey="twentyOnePointsReactApp.points.meals">Meals</Translate>
+                    </Label>
+                  </span>
+                  <span className="checkboxspan">
+                    <AvInput
+                      id="points-alcohol"
+                      type="checkbox"
+                      name="alcohol"
+                      value={pointsEntity.alcohol === 1 && !isNew}
+                      className="checkboxoption"
+                    />
+                    <Label check for="alcohol" className="checkboxLable">
+                      <Translate contentKey="twentyOnePointsReactApp.points.alcohol">Alcohol</Translate>
+                    </Label>
+                  </span>
                 </AvGroup>
                 <AvGroup>
                   <Label id="notesLabel" for="points-notes">
