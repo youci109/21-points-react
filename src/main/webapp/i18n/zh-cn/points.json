@@ -2,27 +2,29 @@
   "twentyOnePointsReactApp": {
     "points": {
       "home": {
-        "title": "Points",
-        "createLabel": "创建新 Points",
-        "createOrEditLabel": "创建或编辑 Points",
-        "search": "查找 Points",
-        "notFound": "No Points found"
+        "title": "分数",
+        "createLabel": "创建新 分数",
+        "createOrEditLabel": "创建或编辑 分数",
+        "DailyPointsLabel": "日常分数",
+        "search": "查找 分数",
+        "notFound": "未发现分数",
+        "AddPoints": "添加分数"
       },
       "created": "Points {{ param }} 创建成功",
       "updated": "Points {{ param }} 更新成功",
       "deleted": "Points {{ param }} 删除成功",
       "delete": {
-        "question": "你确定要删除 Points {{ id }} 吗？"
+        "question": "你确定要删除 分数 {{ id }} 吗？"
       },
       "detail": {
-        "title": "Points"
+        "title": "分数"
       },
-      "date": "Date",
-      "excercise": "Excercise",
-      "meals": "Meals",
-      "alcohol": "Alcohol",
-      "notes": "Notes",
-      "user": "User"
+      "date": "日期",
+      "excercise": "运动",
+      "meals": "膳食健康",
+      "alcohol": "饮酒",
+      "notes": "备注",
+      "user": "用户"
     }
   }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import { Button, InputGroup, Col, Row, Table } from 'reactstrap';
+import { Button, InputGroup, Col, Row, Table, Tooltip, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import { AvForm, AvGroup, AvInput } from 'availity-reactstrap-validation';
 // tslint:disable-next-line:no-unused-variable
 import {
@@ -16,6 +16,11 @@ import {
   JhiItemCount
 } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
+import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes';
+library.add(faCheck);
+library.add(faTimes);
 
 import { IRootState } from 'app/shared/reducers';
 import { getSearchEntities, getEntities } from './points.reducer';
@@ -28,11 +33,15 @@ export interface IPointsProps extends StateProps, DispatchProps, RouteComponentP
 
 export interface IPointsState extends IPaginationBaseState {
   search: string;
+  tooltipOpen: boolean;
+  popoverOpen: boolean;
 }
 
 export class Points extends React.Component<IPointsProps, IPointsState> {
   state: IPointsState = {
     search: '',
+    tooltipOpen: false,
+    popoverOpen: false,
     ...getSortState(this.props.location, ITEMS_PER_PAGE)
   };
 
@@ -47,6 +56,18 @@ export class Points extends React.Component<IPointsProps, IPointsState> {
         this.props.getSearchEntities(search, activePage - 1, itemsPerPage, `${sort},${order}`);
       });
     }
+  };
+
+  toggleTooltip = () => {
+    this.setState({
+      tooltipOpen: !this.state.tooltipOpen
+    });
+  };
+
+  togglePopover = () => {
+    this.setState({
+      popoverOpen: !this.state.popoverOpen
+    });
   };
 
   clear = () => {
@@ -89,17 +110,17 @@ export class Points extends React.Component<IPointsProps, IPointsState> {
       <div>
         <h2 id="points-heading">
           <Translate contentKey="twentyOnePointsReactApp.points.home.title">Points</Translate>
-          <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;
-            <Translate contentKey="twentyOnePointsReactApp.points.home.createLabel">Create new Points</Translate>
-          </Link>
         </h2>
         <Row>
-          <Col sm="12">
+          <Col sm="8">
+            <h2 id="points-heading">
+              <Translate contentKey="twentyOnePointsReactApp.points.home.DailyPointsLabel">Daily Points</Translate>
+            </h2>
+          </Col>
+          <Col sm="4">
             <AvForm onSubmit={this.search}>
               <AvGroup>
-                <InputGroup>
+                <InputGroup className="w-100 mr-1">
                   <AvInput
                     type="text"
                     name="search"
@@ -108,11 +129,19 @@ export class Points extends React.Component<IPointsProps, IPointsState> {
                     placeholder={translate('twentyOnePointsReactApp.points.home.search')}
                   />
                   <Button className="input-group-addon">
-                    <FontAwesomeIcon icon="search" />
+                    <FontAwesomeIcon icon="check" />
                   </Button>
+                  &nbsp;
                   <Button type="reset" className="input-group-addon" onClick={this.clear}>
                     <FontAwesomeIcon icon="trash" />
                   </Button>
+                  &nbsp;
+                  <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
+                    <FontAwesomeIcon icon="plus" />
+                  </Link>
+                  <Tooltip placement="top" isOpen={this.state.tooltipOpen} target="jh-create-entity" toggle={this.toggleTooltip}>
+                    <Translate contentKey="twentyOnePointsReactApp.points.home.AddPoints">Add Points</Translate>
+                  </Tooltip>
                 </InputGroup>
               </AvGroup>
             </AvForm>
