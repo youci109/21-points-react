@@ -100,16 +100,24 @@ spring:
         size: 2
   thymeleaf:
     mode: HTML
+    cache: false
   security:
     oauth2:
       client:
         provider:
           oidc:
-            issuer-uri: http://192.168.3.69:9780/auth/realms/jhipster
+            #            issuer-uri: http://192.168.3.69:9780/auth/realms/jhipster
+            issuer-uri: https://is.cd.mtn:9443/oauth2/token
+            logout-uri: https://is.cd.mtn:9443/oidc/logout
+            authorization-uri: https://is.cd.mtn:9443/oauth2/authorize
+            token-uri: https://is.cd.mtn:9443/oauth2/token
+            user-info-uri: https://is.cd.mtn:9443/oauth2/userinfo
+            jwk-set-uri: https://is.cd.mtn:9443/oauth2/jwks
         registration:
           oidc:
-            client-id: web_app
-            client-secret: web_app
+            client-id: O7iaeaTxBpmf2U9jsDAISNacKWQa
+            client-secret: TK_q6z3YZMdW4hST6wvfIffLINga
+            client-name: 'OIDC应用测试'
 
 server:
   servlet:

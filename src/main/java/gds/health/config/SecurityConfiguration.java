@@ -129,8 +129,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @SuppressWarnings("unchecked")
     private Collection<String> getRolesFromClaims(Map<String, Object> claims) {
-        return (Collection<String>) claims.getOrDefault("groups",
-            claims.getOrDefault("roles", new ArrayList<>()));
+        // 从声明中获取角色
+        String roleStr = (String) claims.getOrDefault("groups",claims.getOrDefault("roles", new ArrayList<>()));
+        return (Collection<String>) Arrays.asList(roleStr.split(","));
     }
 
     private List<GrantedAuthority> mapRolesToGrantedAuthorities(Collection<String> roles) {
