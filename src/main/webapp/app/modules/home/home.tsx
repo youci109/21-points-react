@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Translate } from 'react-jhipster';
 import { connect } from 'react-redux';
-import { Row, Col, Alert } from 'reactstrap';
+import { Row, Col, Alert, Progress } from 'reactstrap';
 
 import { IRootState } from 'app/shared/reducers';
 import { getSession } from 'app/shared/reducers/authentication';
@@ -22,81 +22,108 @@ export class Home extends React.Component<IHomeProp> {
     const { account } = this.props;
     return (
       <Row>
-        <Col md="9">
-          <h2>
-            <Translate contentKey="home.title">Welcome, Java Hipster!</Translate>
-          </h2>
-          <p className="lead">
-            <Translate contentKey="home.subtitle">This is your homepage</Translate>
-          </p>
+        <Col md="4" className="d-none d-md-inline">
+          <span className="heart img-fluid rounded" />
+        </Col>
+        <Col md="8">
           {account && account.login ? (
             <div>
-              <Alert color="success">
-                <Translate contentKey="home.logged.message" interpolate={{ username: account.login }}>
-                  You are logged in as user {account.login}.
+              <h2>
+                <Translate contentKey="home.title" interpolate={{ firstName: account.firstName }}>
+                  Welcome, {account.firstName}!
                 </Translate>
-                <Link to={`entity/points/new`} className="btn btn-primary jh-create-entity" id="jh-create-entity">
-                  <FontAwesomeIcon icon="plus" /> Add Points
-                </Link>
-              </Alert>
+              </h2>
             </div>
           ) : (
             <div>
-              <Alert color="warning">
-                <Translate contentKey="global.messages.info.authenticated.prefix">If you want to </Translate>
-                <a href={getLoginUrl()} className="alert-link">
-                  <Translate contentKey="global.messages.info.authenticated.link">sign in</Translate>
-                </a>
-                <Translate contentKey="global.messages.info.authenticated.suffix">
-                  , you can try the default accounts:
-                  <br />- Administrator (login=&quot;admin&quot; and password=&quot;admin&quot;)
-                  <br />- User (login=&quot;user&quot; and password=&quot;user&quot;).
-                </Translate>
-              </Alert>
+              <h2>Welcome!</h2>
             </div>
           )}
-          <p>
-            <Translate contentKey="home.question">If you have any question on JHipster:</Translate>
+          <p className="lead">
+            <span>21-Points Health is here to track your health and improve your life. 😊</span>
           </p>
-
-          <ul>
-            <li>
-              <a href="https://www.jhipster.tech/" target="_blank" rel="noopener noreferrer">
-                <Translate contentKey="home.link.homepage">JHipster homepage</Translate>
-              </a>
-            </li>
-            <li>
-              <a href="http://stackoverflow.com/tags/jhipster/info" target="_blank" rel="noopener noreferrer">
-                <Translate contentKey="home.link.stackoverflow">JHipster on Stack Overflow</Translate>
-              </a>
-            </li>
-            <li>
-              <a href="https://github.com/jhipster/generator-jhipster/issues?state=open" target="_blank" rel="noopener noreferrer">
-                <Translate contentKey="home.link.bugtracker">JHipster bug tracker</Translate>
-              </a>
-            </li>
-            <li>
-              <a href="https://gitter.im/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">
-                <Translate contentKey="home.link.chat">JHipster public chat room</Translate>
-              </a>
-            </li>
-            <li>
-              <a href="https://twitter.com/java_hipster" target="_blank" rel="noopener noreferrer">
-                <Translate contentKey="home.link.follow">follow @java_hipster on Twitter</Translate>
-              </a>
-            </li>
-          </ul>
-
-          <p>
-            <Translate contentKey="home.like">If you like JHipster, do not forget to give us a star on</Translate>{' '}
-            <a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">
-              Github
-            </a>
-            !
-          </p>
-        </Col>
-        <Col md="3" className="pad">
-          <span className="hipster rounded" />
+          {account && account.login ? (
+            <div>
+              <Row>
+                <Col xs="8">
+                  <h5 className="mt-1 d-none d-sm-inline">Points for the week of {'{dynamic content}'}</h5>
+                  <h6 className="mt-1 d-sm-none">Points for {'{dynamic content}'}</h6>
+                </Col>
+                <Col xs="4" className="text-right">
+                  <Link to={`entity/points/new`} className="btn btn-primary m-0 mb-1 text-white d-none d-sm-inline">
+                    <FontAwesomeIcon icon="plus" />
+                    &nbsp;Points
+                  </Link>
+                  <Link to={`entity/points/new`} className="btn btn-primary m-0 mb-1 text-white d-sm-none">
+                    <FontAwesomeIcon icon="plus" />
+                  </Link>
+                </Col>
+              </Row>
+              <Row className="mt-2">
+                <Col xs="12">
+                  <Progress striped value="25">
+                    3 / Goal: 10
+                  </Progress>
+                </Col>
+              </Row>
+              <Row className="mt-4">
+                <Col xs="6" className="text-nowrap">
+                  <h4 className="mt-1 d-none d-sm-inline">Blood Pressure:</h4>
+                  <h4 className="mt-1 d-sm-none">BP:</h4>
+                </Col>
+                <Col xs="6" className="text-right">
+                  <Link to={`/`} className="btn btn-outline-secondary btn-sm d-none d-sm-inline">
+                    <FontAwesomeIcon icon="plus" />
+                    &nbsp;Blood Pressure
+                  </Link>
+                  <Link to={`/`} className="btn btn-outline-secondary btn-sm d-sm-none">
+                    <FontAwesomeIcon icon="plus" />
+                    &nbsp;BP
+                  </Link>
+                </Col>
+              </Row>
+              <Row className="mt-1">
+                <Col xs="12" md="11">
+                  Graph
+                </Col>
+              </Row>
+              <Row className="mt-4">
+                <Col xs="6" className="text-nowrap">
+                  <h4 className="mt-1">Weight:</h4>
+                </Col>
+                <Col xs="6" className="text-right">
+                  <Link to={`/`} className="btn btn-outline-secondary btn-sm">
+                    <FontAwesomeIcon icon="plus" />
+                    &nbsp;Weight
+                  </Link>
+                </Col>
+              </Row>
+              <Row className="mt-1">
+                <Col xs="12" md="11">
+                  Graph
+                </Col>
+              </Row>
+              {account && <p>You are logged in as user {account.login}</p>}
+            </div>
+          ) : (
+            <div>
+              <p className="font-weight-bold">
+                <span>To get started, please </span>
+                <Link to="/login" className="alert-link">
+                  <FontAwesomeIcon icon="sign-in-alt" />
+                  <a href={getLoginUrl()} className="alert-link">
+                    <Translate contentKey="global.messages.info.authenticated.link">sign in</Translate>
+                  </a>
+                </Link>
+              </p>
+              <div>
+                Don't have an account yet?&nbsp;
+                <Link to="/register" className="alert-link">
+                  Register a new account
+                </Link>
+              </div>
+            </div>
+          )}
         </Col>
       </Row>
     );
