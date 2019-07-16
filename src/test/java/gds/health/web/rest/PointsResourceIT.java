@@ -5,6 +5,7 @@ import gds.health.config.TestSecurityConfiguration;
 import gds.health.domain.Points;
 import gds.health.domain.User;
 import gds.health.repository.PointsRepository;
+import gds.health.repository.UserRepository;
 import gds.health.repository.search.PointsSearchRepository;
 import gds.health.service.PointsService;
 import gds.health.service.dto.PointsDTO;
@@ -28,6 +29,7 @@ import org.springframework.validation.Validator;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -75,6 +77,9 @@ public class PointsResourceIT {
 
     @Autowired
     private WebApplicationContext context;
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * This repository is mocked in the gds.health.repository.search test package.
@@ -430,5 +435,44 @@ public class PointsResourceIT {
     public void testEntityFromId() {
         assertThat(pointsMapper.fromId(42L).getId()).isEqualTo(42);
         assertThat(pointsMapper.fromId(null)).isNull();
+    }
+
+    private void createPointsByWeek(LocalDate thisMonday, LocalDate lastMonday) {
+        User user = userRepository.findOneByLogin("user").get();
+        // Create points in two separate weeks
+        Points points = new Points().date(thisMonday.plusDays(2)).excercise(1).meals(1).alcohol(1).user(user);
+        pointsRepository.saveAndFlush(points);
+
+        points = new Points().date(thisMonday.plusDays(3)).excercise(1).meals(1).alcohol(0).user(user);
+        pointsRepository.saveAndFlush(points);
+
+        points = new Points().date(lastMonday.plusDays(3)).excercise(0).meals(0).alcohol(1).user(user);
+        pointsRepository.saveAndFlush(points);
+
+        points = new Points().date(lastMonday.plusDays(4)).excercise(1).meals(1).alcohol(0).user(user);
+        pointsRepository.saveAndFlush(points);
+    }
+
+    @Test
+    @Transactional
+    public void getPointsThisWeek() throws Exception {
+        LocalDate today = LocalDate.now();
+        LocalDate thisMonday = today.with(DayOfWeek.MONDAY);
+        LocalDate lastMonday = thisMonday.minusWeeks(1);
+        createPointsByWeek(thisMonday, lastMonday);
+
+        // create security-aware mockMvc
+        restPointsMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
+        // Get all the points
+        restPointsMockMvc.perform(get("/api/points-this-week")
+            .with(user("user").roles("USER")))
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.week").value(thisMonday.toString()))
+            .andExpect(jsonPath("$.points").value(5));
     }
 }
