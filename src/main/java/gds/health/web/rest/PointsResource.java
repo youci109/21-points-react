@@ -1,12 +1,14 @@
 package gds.health.web.rest;
 
 import gds.health.service.PointsService;
+import gds.health.service.dto.PointsPerWeekDTO;
 import gds.health.web.rest.errors.BadRequestAlertException;
 import gds.health.service.dto.PointsDTO;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.micrometer.core.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -147,6 +149,17 @@ public class PointsResource {
         Page<PointsDTO> page = pointsService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    /**
+     * 获取当前周的所有分数
+     */
+    @GetMapping("/points-this-week")
+    @Timed
+    public PointsPerWeekDTO getPointsThisWeek() {
+        log.debug("REST request to get points this week");
+
+        return pointsService.getPointsThisWeek();
     }
 
 }

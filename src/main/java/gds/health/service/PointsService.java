@@ -7,6 +7,7 @@ import gds.health.repository.search.PointsSearchRepository;
 import gds.health.security.AuthoritiesConstants;
 import gds.health.security.SecurityUtils;
 import gds.health.service.dto.PointsDTO;
+import gds.health.service.dto.PointsPerWeekDTO;
 import gds.health.service.mapper.PointsMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
@@ -122,5 +126,38 @@ public class PointsService {
         log.debug("Request to search for a page of Points for query {}", query);
         return pointsSearchRepository.search(queryStringQuery(query), pageable)
             .map(pointsMapper::toDto);
+    }
+
+    /**
+     *  获取当前周的分数
+     * @return 周分数DTO
+     */
+    @Transactional(readOnly = true)
+    public PointsPerWeekDTO getPointsThisWeek() {
+        // Get current date
+        LocalDate now = LocalDate.now();
+        // Get first day of week
+        LocalDate startOfWeek = now.with(DayOfWeek.MONDAY);
+        // Get last day of week
+        LocalDate endOfWeek = now.with(DayOfWeek.SUNDAY);
+        log.debug("Looking for points between: {} and {}", startOfWeek, endOfWeek);
+
+        List<Points> points = pointsRepository.findAllByDateBetweenAndUserLogin(startOfWeek, endOfWeek, SecurityUtils.getCurrentUserLogin().get());
+        return  calculatePoints(startOfWeek, points);
+    }
+
+    /**
+     *  获取周分数
+     * @param startOfWeek 周开始时间
+     * @param points 分数集合
+     * @return
+     */
+    private PointsPerWeekDTO calculatePoints(LocalDate startOfWeek, List<Points> points) {
+        Integer numPoints = points.stream()
+            .mapToInt(p -> p.getExcercise() + p.getMeals() + p.getAlcohol())
+            .sum();
+
+        PointsPerWeekDTO count = new PointsPerWeekDTO(startOfWeek, numPoints);
+        return count;
     }
 }
