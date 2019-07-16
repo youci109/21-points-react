@@ -8,6 +8,7 @@ import { Row, Col, Alert } from 'reactstrap';
 
 import { IRootState } from 'app/shared/reducers';
 import { getSession } from 'app/shared/reducers/authentication';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getLoginUrl } from 'app/shared/util/url-utils';
 
 export interface IHomeProp extends StateProps, DispatchProps {}
@@ -34,6 +35,9 @@ export class Home extends React.Component<IHomeProp> {
                 <Translate contentKey="home.logged.message" interpolate={{ username: account.login }}>
                   You are logged in as user {account.login}.
                 </Translate>
+                <Link to={`entity/points/new`} className="btn btn-primary jh-create-entity" id="jh-create-entity">
+                  <FontAwesomeIcon icon="plus" /> Add Points
+                </Link>
               </Alert>
             </div>
           ) : (
