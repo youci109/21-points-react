@@ -115,8 +115,8 @@ spring:
             jwk-set-uri: https://is.cd.mtn:9443/oauth2/jwks
         registration:
           oidc:
-            client-id: O7iaeaTxBpmf2U9jsDAISNacKWQa
-            client-secret: TK_q6z3YZMdW4hST6wvfIffLINga
+            client-id: CCO5h54fqrv1LTvK8OeP7SPjpQga
+            client-secret: LTqr1zBeQf4rgADckKiw1y9vbnYa
             client-name: 'OIDC应用测试'
 
 server:

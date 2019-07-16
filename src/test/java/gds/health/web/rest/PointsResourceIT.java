@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -37,6 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -69,6 +72,9 @@ public class PointsResourceIT {
 
     @Autowired
     private PointsService pointsService;
+
+    @Autowired
+    private WebApplicationContext context;
 
     /**
      * This repository is mocked in the gds.health.repository.search test package.
@@ -160,9 +166,15 @@ public class PointsResourceIT {
     public void createPoints() throws Exception {
         int databaseSizeBeforeCreate = pointsRepository.findAll().size();
 
+        // Create security-aware mockMvc
+        restPointsMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
         // Create the Points
         PointsDTO pointsDTO = pointsMapper.toDto(points);
-        restPointsMockMvc.perform(post("/api/points")
+        restPointsMockMvc.perform(post("/api/points").with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(pointsDTO)))
             .andExpect(status().isCreated());
@@ -185,6 +197,12 @@ public class PointsResourceIT {
     @Transactional
     public void createPointsWithExistingId() throws Exception {
         int databaseSizeBeforeCreate = pointsRepository.findAll().size();
+
+        // Create security-aware mockMvc
+        restPointsMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
 
         // Create the Points with an existing ID
         points.setId(1L);
@@ -230,8 +248,15 @@ public class PointsResourceIT {
         // Initialize the database
         pointsRepository.saveAndFlush(points);
 
+        // Create security-aware mockMvc
+        restPointsMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
         // Get all the pointsList
-        restPointsMockMvc.perform(get("/api/points?sort=id,desc"))
+        restPointsMockMvc.perform(get("/api/points?sort=id,desc")
+            .with(user("admin").roles("ADMIN")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(points.getId().intValue())))
@@ -288,7 +313,7 @@ public class PointsResourceIT {
             .notes(UPDATED_NOTES);
         PointsDTO pointsDTO = pointsMapper.toDto(updatedPoints);
 
-        restPointsMockMvc.perform(put("/api/points")
+        restPointsMockMvc.perform(put("/api/points").with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(pointsDTO)))
             .andExpect(status().isOk());
