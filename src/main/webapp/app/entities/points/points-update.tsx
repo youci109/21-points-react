@@ -18,6 +18,8 @@ import { IPoints } from 'app/shared/model/points.model';
 import { convertDateTimeFromServer, convertDateTimeToServer } from 'app/shared/util/date-utils';
 import { mapIdList } from 'app/shared/util/entity-utils';
 
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 export interface IPointsUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export interface IPointsUpdateState {
@@ -74,7 +76,7 @@ export class PointsUpdate extends React.Component<IPointsUpdateProps, IPointsUpd
   };
 
   render() {
-    const { pointsEntity, users, loading, updating } = this.props;
+    const { pointsEntity, users, loading, updating, isAdmin } = this.props;
     const { isNew } = this.state;
 
     return (
@@ -165,23 +167,22 @@ export class PointsUpdate extends React.Component<IPointsUpdateProps, IPointsUpd
                     }}
                   />
                 </AvGroup>
-                <AvGroup>
-                  <Label for="points-user">
-                    <Translate contentKey="twentyOnePointsReactApp.points.user">User</Translate>
-                  </Label>
-                  <AvInput id="points-user" type="select" className="form-control" name="userId" required>
-                    {users
-                      ? users.map(otherEntity => (
-                          <option value={otherEntity.id} key={otherEntity.id}>
-                            {otherEntity.login}
-                          </option>
-                        ))
-                      : null}
-                  </AvInput>
-                  <AvFeedback>
-                    <Translate contentKey="entity.validation.required">This field is required.</Translate>
-                  </AvFeedback>
-                </AvGroup>
+                {isAdmin && (
+                  <AvGroup>
+                    <Label for="points-user">
+                      <Translate contentKey="twentyOnePointsReactApp.points.user">User</Translate>
+                    </Label>
+                    <AvInput id="points-user" type="select" className="form-control" name="userId">
+                      {users
+                        ? users.map(otherEntity => (
+                            <option value={otherEntity.id} key={otherEntity.id}>
+                              {otherEntity.login}
+                            </option>
+                          ))
+                        : null}
+                    </AvInput>
+                  </AvGroup>
+                )}
                 <Button tag={Link} id="cancel-save" to="/entity/points" replace color="info">
                   <FontAwesomeIcon icon="arrow-left" />
                   &nbsp;
@@ -209,7 +210,8 @@ const mapStateToProps = (storeState: IRootState) => ({
   pointsEntity: storeState.points.entity,
   loading: storeState.points.loading,
   updating: storeState.points.updating,
-  updateSuccess: storeState.points.updateSuccess
+  updateSuccess: storeState.points.updateSuccess,
+  isAdmin: hasAnyAuthority(storeState.authentication.account.authorities, [AUTHORITIES.ADMIN])
 });
 
 const mapDispatchToProps = {

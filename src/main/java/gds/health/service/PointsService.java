@@ -2,7 +2,10 @@ package gds.health.service;
 
 import gds.health.domain.Points;
 import gds.health.repository.PointsRepository;
+import gds.health.repository.UserRepository;
 import gds.health.repository.search.PointsSearchRepository;
+import gds.health.security.AuthoritiesConstants;
+import gds.health.security.SecurityUtils;
 import gds.health.service.dto.PointsDTO;
 import gds.health.service.mapper.PointsMapper;
 import org.slf4j.Logger;
@@ -32,10 +35,13 @@ public class PointsService {
 
     private final PointsSearchRepository pointsSearchRepository;
 
-    public PointsService(PointsRepository pointsRepository, PointsMapper pointsMapper, PointsSearchRepository pointsSearchRepository) {
+    private final UserRepository userRepository;
+
+    public PointsService(PointsRepository pointsRepository, PointsMapper pointsMapper, PointsSearchRepository pointsSearchRepository, UserRepository userRepository) {
         this.pointsRepository = pointsRepository;
         this.pointsMapper = pointsMapper;
         this.pointsSearchRepository = pointsSearchRepository;
+        this.userRepository= userRepository;
     }
 
     /**
@@ -47,6 +53,14 @@ public class PointsService {
     public PointsDTO save(PointsDTO pointsDTO) {
         log.debug("Request to save Points : {}", pointsDTO);
         Points points = pointsMapper.toEntity(pointsDTO);
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            log.debug("No user passed in, using current user: {}", SecurityUtils.getCurrentUserLogin());
+            System.out.println(SecurityUtils.getCurrentUserLogin());
+            System.out.println(SecurityUtils.getCurrentUserLogin().get());
+            System.out.println(userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()));
+            points.setUser(userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get());
+        }
+        System.out.println(SecurityUtils.getCurrentUserLogin());
         points = pointsRepository.save(points);
         PointsDTO result = pointsMapper.toDto(points);
         pointsSearchRepository.save(points);
