@@ -3,7 +3,9 @@ package gds.health.web.rest;
 import gds.health.TwentyOnePointsReactApp;
 import gds.health.config.TestSecurityConfiguration;
 import gds.health.domain.Preferences;
+import gds.health.domain.User;
 import gds.health.repository.PreferencesRepository;
+import gds.health.repository.UserRepository;
 import gds.health.repository.search.PreferencesSearchRepository;
 import gds.health.service.PreferencesService;
 import gds.health.service.dto.PreferencesDTO;
@@ -32,10 +34,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import gds.health.domain.enumeration.Units;
+import org.springframework.web.context.WebApplicationContext;
+
 /**
  * Integration tests for the {@Link PreferencesResource} REST controller.
  */
@@ -56,6 +62,13 @@ public class PreferencesResourceIT {
 
     @Autowired
     private PreferencesService preferencesService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private WebApplicationContext context;
+
 
     /**
      * This repository is mocked in the gds.health.repository.search test package.
@@ -377,5 +390,50 @@ public class PreferencesResourceIT {
     public void testEntityFromId() {
         assertThat(preferencesMapper.fromId(42L).getId()).isEqualTo(42);
         assertThat(preferencesMapper.fromId(null)).isNull();
+    }
+
+    private void createUserPreferences() {
+        User user = userRepository.findOneByLogin("user").get();
+        // Create preferences
+        Preferences preferences = new Preferences().weeklyGoal(15).weightUnits(Units.KG).user(user);
+        preferencesRepository.saveAndFlush(preferences);
+    }
+
+    @Test
+    @Transactional
+    public void getUserPreferences() throws Exception {
+
+        createUserPreferences();
+
+        // Create security-aware mockMvc
+        restPreferencesMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
+        // Get the preferences
+        restPreferencesMockMvc.perform(get("/api/my-preferences")
+            .with(user("user").roles("USER")))
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.weeklyGoal").value(15));
+    }
+
+    @Test
+    @Transactional
+    public void getDefaultUserPreferences() throws Exception {
+
+        // Create security-aware mockMvc
+        restPreferencesMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
+        // Get the preferences
+        restPreferencesMockMvc.perform(get("/api/my-preferences")
+            .with(user("user").roles("USER")))
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.weeklyGoal").value(10));
     }
 }

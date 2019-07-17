@@ -3,6 +3,7 @@ package gds.health.service;
 import gds.health.domain.Preferences;
 import gds.health.repository.PreferencesRepository;
 import gds.health.repository.search.PreferencesSearchRepository;
+import gds.health.security.SecurityUtils;
 import gds.health.service.dto.PreferencesDTO;
 import gds.health.service.mapper.PreferencesMapper;
 import org.slf4j.Logger;
@@ -106,5 +107,23 @@ public class PreferencesService {
             .stream(preferencesSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .map(preferencesMapper::toDto)
             .collect(Collectors.toList());
+    }
+
+    /**
+     *  获取用户设置
+     * @return 用户设置
+     */
+    public PreferencesDTO getUserPreferences() {
+        String username = SecurityUtils.getCurrentUserLogin().get();
+        log.debug("Request to get User Preferences : {}",username);
+        Optional<Preferences> preferences = preferencesRepository.findOneByUserLogin(username);
+
+        if(preferences.isPresent()){
+           return preferences.map(preferencesMapper::toDto).get();
+        } else {
+            PreferencesDTO defaultPreferences = new PreferencesDTO();
+            defaultPreferences.setWeeklyGoal(10); // default
+            return defaultPreferences;
+        }
     }
 }
