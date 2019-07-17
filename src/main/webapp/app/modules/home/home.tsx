@@ -8,6 +8,7 @@ import { Row, Col, Alert, Progress } from 'reactstrap';
 
 import { IRootState } from 'app/shared/reducers';
 import { getSession } from 'app/shared/reducers/authentication';
+import { getPointsThisWeek } from 'app/entities/points/points.reducer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getLoginUrl } from 'app/shared/util/url-utils';
 import PointsHome from 'app/entities/points/points-home';
@@ -19,10 +20,15 @@ export interface IHomeProp extends StateProps, DispatchProps {}
 export class Home extends React.Component<IHomeProp> {
   componentDidMount() {
     this.props.getSession();
+    this.getPointsThisWeek();
   }
 
+  getPointsThisWeek = () => {
+    this.props.getPointsThisWeek();
+  };
+
   render() {
-    const { account } = this.props;
+    const { account, pointsThisWeek } = this.props;
     return (
       <Row>
         <Col md="4" className="d-none d-md-inline">
@@ -47,7 +53,7 @@ export class Home extends React.Component<IHomeProp> {
           </p>
           {account && account.login ? (
             <div>
-              <PointsHome />
+              <PointsHome pointsThisWeek={pointsThisWeek} />
               <BloodPressureHome />
               <WeigthHome />
               {account && <p>You are logged in as user {account.login}</p>}
@@ -79,10 +85,14 @@ export class Home extends React.Component<IHomeProp> {
 
 const mapStateToProps = storeState => ({
   account: storeState.authentication.account,
-  isAuthenticated: storeState.authentication.isAuthenticated
+  isAuthenticated: storeState.authentication.isAuthenticated,
+  pointsThisWeek: storeState.points.pointsThisWeek
 });
 
-const mapDispatchToProps = { getSession };
+const mapDispatchToProps = {
+  getSession,
+  getPointsThisWeek
+};
 
 type StateProps = ReturnType<typeof mapStateToProps>;
 type DispatchProps = typeof mapDispatchToProps;

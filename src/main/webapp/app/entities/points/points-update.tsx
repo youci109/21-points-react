@@ -72,10 +72,6 @@ export class PointsUpdate extends React.Component<IPointsUpdateProps, IPointsUpd
   };
 
   handleClose = () => {
-    this.props.history.push('/entity/points');
-  };
-
-  handleBack = () => {
     this.props.history.goBack();
   };
 
@@ -187,7 +183,7 @@ export class PointsUpdate extends React.Component<IPointsUpdateProps, IPointsUpd
                     </AvInput>
                   </AvGroup>
                 )}
-                <Button id="cancel-save" color="info" onClick={this.handleBack}>
+                <Button id="cancel-save" color="info" onClick={this.handleClose}>
                   <FontAwesomeIcon icon="arrow-left" />
                   &nbsp;
                   <span className="d-none d-md-inline">
