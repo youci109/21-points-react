@@ -17,6 +17,7 @@ import reducer, {
 } from 'app/entities/preferences/preferences.reducer';
 import { REQUEST, SUCCESS, FAILURE } from 'app/shared/reducers/action-type.util';
 import { IPreferences, defaultValue } from 'app/shared/model/preferences.model';
+import { getPointsThisWeek } from 'app/entities/points/points.reducer';
 
 // tslint:disable no-invalid-template-strings
 describe('Entities reducer tests', () => {
@@ -34,7 +35,8 @@ describe('Entities reducer tests', () => {
     entities: [] as ReadonlyArray<IPreferences>,
     entity: defaultValue,
     updating: false,
-    updateSuccess: false
+    updateSuccess: false,
+    userWeeklyGoal: null
   };
 
   function testInitialState(state) {
@@ -42,7 +44,8 @@ describe('Entities reducer tests', () => {
       loading: false,
       errorMessage: null,
       updating: false,
-      updateSuccess: false
+      updateSuccess: false,
+      userWeeklyGoal: null
     });
     expect(isEmpty(state.entities));
     expect(isEmpty(state.entity));

@@ -25,7 +25,7 @@ const pointsHome = props => (
     <Row className="mt-2">
       <Col xs="12">
         <Progress striped max="21" hidden={!props.pointsThisWeek.points} value={props.pointsThisWeek.points}>
-          {props.pointsThisWeek.points} / Goal: 10
+          {props.pointsThisWeek.points} / Goal: {props.userWeeklyGoal}
         </Progress>
         {!props.pointsThisWeek.points && <Alert color="warning">No points yet this week, better get moving!</Alert>}
       </Col>
