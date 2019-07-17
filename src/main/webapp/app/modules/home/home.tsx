@@ -74,12 +74,10 @@ export class Home extends React.Component<IHomeProp> {
             <div>
               <p className="font-weight-bold">
                 <span>To get started, please </span>
-                <Link to="/login" className="alert-link">
-                  <FontAwesomeIcon icon="sign-in-alt" />
-                  <a href={getLoginUrl()} className="alert-link">
-                    <Translate contentKey="global.messages.info.authenticated.link">sign in</Translate>
-                  </a>
-                </Link>
+                <FontAwesomeIcon icon="sign-in-alt" />
+                <a href={getLoginUrl()} className="alert-link">
+                  <Translate contentKey="global.messages.info.authenticated.link">sign in</Translate>
+                </a>
               </p>
               <div>
                 Don't have an account yet?&nbsp;
