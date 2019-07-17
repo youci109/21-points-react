@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import { Button, InputGroup, Col, Row, Table } from 'reactstrap';
+import { Button, InputGroup, Col, Row, Table, Tooltip } from 'reactstrap';
 import { AvForm, AvGroup, AvInput } from 'availity-reactstrap-validation';
 // tslint:disable-next-line:no-unused-variable
 import { Translate, translate, ICrudSearchAction, ICrudGetAllAction } from 'react-jhipster';
@@ -17,11 +17,13 @@ export interface IPreferencesProps extends StateProps, DispatchProps, RouteCompo
 
 export interface IPreferencesState {
   search: string;
+  tooltipOpen: boolean;
 }
 
 export class Preferences extends React.Component<IPreferencesProps, IPreferencesState> {
   state: IPreferencesState = {
-    search: ''
+    search: '',
+    tooltipOpen: false
   };
 
   componentDidMount() {
@@ -32,6 +34,12 @@ export class Preferences extends React.Component<IPreferencesProps, IPreferences
     if (this.state.search) {
       this.props.getSearchEntities(this.state.search);
     }
+  };
+
+  toggleTooltip = () => {
+    this.setState({
+      tooltipOpen: !this.state.tooltipOpen
+    });
   };
 
   clear = () => {
@@ -46,33 +54,32 @@ export class Preferences extends React.Component<IPreferencesProps, IPreferences
     const { preferencesList, match } = this.props;
     return (
       <div>
-        <h2 id="preferences-heading">
-          <Translate contentKey="twentyOnePointsReactApp.preferences.home.title">Preferences</Translate>
-          <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;
-            <Translate contentKey="twentyOnePointsReactApp.preferences.home.createLabel">Create new Preferences</Translate>
-          </Link>
-        </h2>
         <Row>
-          <Col sm="12">
+          <Col sm="8">
+            <h2 id="preferences-heading">Preferences</h2>
+          </Col>
+          <Col sm="4">
             <AvForm onSubmit={this.search}>
               <AvGroup>
-                <InputGroup>
-                  <AvInput
-                    type="text"
-                    name="search"
-                    value={this.state.search}
-                    onChange={this.handleSearch}
-                    placeholder={translate('twentyOnePointsReactApp.preferences.home.search')}
-                  />
-                  <Button className="input-group-addon">
-                    <FontAwesomeIcon icon="search" />
-                  </Button>
-                  <Button type="reset" className="input-group-addon" onClick={this.clear}>
-                    <FontAwesomeIcon icon="trash" />
-                  </Button>
-                </InputGroup>
+                {preferencesList.length === 0 && (
+                  <InputGroup>
+                    <AvInput type="text" name="search" value={this.state.search} onChange={this.handleSearch} placeholder="Search" />
+                    <Button className="input-group-addon">
+                      <FontAwesomeIcon icon="search" />
+                    </Button>
+                    &nbsp;
+                    <Button type="reset" className="input-group-addon" onClick={this.clear}>
+                      <FontAwesomeIcon icon="trash" />
+                    </Button>
+                    &nbsp;
+                    <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
+                      <FontAwesomeIcon icon="plus" />
+                    </Link>
+                    <Tooltip placement="top" isOpen={this.state.tooltipOpen} target="jh-create-entity" toggle={this.toggleTooltip}>
+                      Set Preferences
+                    </Tooltip>
+                  </InputGroup>
+                )}
               </AvGroup>
             </AvForm>
           </Col>
@@ -91,9 +98,6 @@ export class Preferences extends React.Component<IPreferencesProps, IPreferences
                   <th>
                     <Translate contentKey="twentyOnePointsReactApp.preferences.weightUnits">Weight Units</Translate>
                   </th>
-                  <th>
-                    <Translate contentKey="twentyOnePointsReactApp.preferences.user">User</Translate>
-                  </th>
                   <th />
                 </tr>
               </thead>
@@ -109,7 +113,6 @@ export class Preferences extends React.Component<IPreferencesProps, IPreferences
                     <td>
                       <Translate contentKey={`twentyOnePointsReactApp.Units.${preferences.weightUnits}`} />
                     </td>
-                    <td>{preferences.userLogin ? preferences.userLogin : ''}</td>
                     <td className="text-right">
                       <div className="btn-group flex-btn-group-container">
                         <Button tag={Link} to={`${match.url}/${preferences.id}`} color="info" size="sm">
