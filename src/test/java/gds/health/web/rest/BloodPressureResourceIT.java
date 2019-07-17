@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 import java.time.Instant;
@@ -40,6 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -66,6 +69,9 @@ public class BloodPressureResourceIT {
 
     @Autowired
     private BloodPressureService bloodPressureService;
+
+    @Autowired
+    private WebApplicationContext context;
 
     /**
      * This repository is mocked in the gds.health.repository.search test package.
@@ -153,9 +159,16 @@ public class BloodPressureResourceIT {
     public void createBloodPressure() throws Exception {
         int databaseSizeBeforeCreate = bloodPressureRepository.findAll().size();
 
+        // Create security-aware mockMvc
+        restBloodPressureMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
         // Create the BloodPressure
         BloodPressureDTO bloodPressureDTO = bloodPressureMapper.toDto(bloodPressure);
         restBloodPressureMockMvc.perform(post("/api/blood-pressures")
+            .with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(bloodPressureDTO)))
             .andExpect(status().isCreated());
@@ -259,8 +272,15 @@ public class BloodPressureResourceIT {
         // Initialize the database
         bloodPressureRepository.saveAndFlush(bloodPressure);
 
+        // Create security-aware mockMvc
+        restBloodPressureMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
         // Get all the bloodPressureList
-        restBloodPressureMockMvc.perform(get("/api/blood-pressures?sort=id,desc"))
+        restBloodPressureMockMvc.perform(get("/api/blood-pressures?sort=id,desc")
+            .with(user("admin").roles("ADMIN")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(bloodPressure.getId().intValue())))
@@ -301,6 +321,12 @@ public class BloodPressureResourceIT {
 
         int databaseSizeBeforeUpdate = bloodPressureRepository.findAll().size();
 
+        // Create security-aware mockMvc
+        restBloodPressureMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
         // Update the bloodPressure
         BloodPressure updatedBloodPressure = bloodPressureRepository.findById(bloodPressure.getId()).get();
         // Disconnect from session so that the updates on updatedBloodPressure are not directly saved in db
@@ -312,6 +338,7 @@ public class BloodPressureResourceIT {
         BloodPressureDTO bloodPressureDTO = bloodPressureMapper.toDto(updatedBloodPressure);
 
         restBloodPressureMockMvc.perform(put("/api/blood-pressures")
+            .with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(bloodPressureDTO)))
             .andExpect(status().isOk());

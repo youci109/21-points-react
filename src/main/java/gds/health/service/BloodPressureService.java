@@ -2,7 +2,10 @@ package gds.health.service;
 
 import gds.health.domain.BloodPressure;
 import gds.health.repository.BloodPressureRepository;
+import gds.health.repository.UserRepository;
 import gds.health.repository.search.BloodPressureSearchRepository;
+import gds.health.security.AuthoritiesConstants;
+import gds.health.security.SecurityUtils;
 import gds.health.service.dto.BloodPressureDTO;
 import gds.health.service.mapper.BloodPressureMapper;
 import org.slf4j.Logger;
@@ -32,10 +35,13 @@ public class BloodPressureService {
 
     private final BloodPressureSearchRepository bloodPressureSearchRepository;
 
-    public BloodPressureService(BloodPressureRepository bloodPressureRepository, BloodPressureMapper bloodPressureMapper, BloodPressureSearchRepository bloodPressureSearchRepository) {
+    private final UserRepository userRepository;
+
+    public BloodPressureService(BloodPressureRepository bloodPressureRepository, BloodPressureMapper bloodPressureMapper, BloodPressureSearchRepository bloodPressureSearchRepository, UserRepository userRepository) {
         this.bloodPressureRepository = bloodPressureRepository;
         this.bloodPressureMapper = bloodPressureMapper;
         this.bloodPressureSearchRepository = bloodPressureSearchRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -47,6 +53,10 @@ public class BloodPressureService {
     public BloodPressureDTO save(BloodPressureDTO bloodPressureDTO) {
         log.debug("Request to save BloodPressure : {}", bloodPressureDTO);
         BloodPressure bloodPressure = bloodPressureMapper.toEntity(bloodPressureDTO);
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            log.debug("No user passed in, using current user: {}", SecurityUtils.getCurrentUserLogin());
+            bloodPressure.setUser(userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get());
+        }
         bloodPressure = bloodPressureRepository.save(bloodPressure);
         BloodPressureDTO result = bloodPressureMapper.toDto(bloodPressure);
         bloodPressureSearchRepository.save(bloodPressure);
@@ -62,8 +72,11 @@ public class BloodPressureService {
     @Transactional(readOnly = true)
     public Page<BloodPressureDTO> findAll(Pageable pageable) {
         log.debug("Request to get all BloodPressures");
-        return bloodPressureRepository.findAll(pageable)
-            .map(bloodPressureMapper::toDto);
+        if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            return bloodPressureRepository.findAllByOrderByTimestampDesc(pageable).map(bloodPressureMapper::toDto);
+        } else {
+            return bloodPressureRepository.findByUserIsCurrentUser(pageable).map(bloodPressureMapper::toDto);
+        }
     }
 
 
