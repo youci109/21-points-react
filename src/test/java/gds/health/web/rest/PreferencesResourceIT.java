@@ -32,10 +32,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import gds.health.domain.enumeration.Units;
+import org.springframework.web.context.WebApplicationContext;
+
 /**
  * Integration tests for the {@Link PreferencesResource} REST controller.
  */
@@ -56,6 +60,7 @@ public class PreferencesResourceIT {
 
     @Autowired
     private PreferencesService preferencesService;
+
 
     /**
      * This repository is mocked in the gds.health.repository.search test package.
@@ -79,6 +84,9 @@ public class PreferencesResourceIT {
 
     @Autowired
     private Validator validator;
+
+    @Autowired
+    private WebApplicationContext context;
 
     private MockMvc restPreferencesMockMvc;
 
@@ -217,8 +225,15 @@ public class PreferencesResourceIT {
         // Initialize the database
         preferencesRepository.saveAndFlush(preferences);
 
+        // create security-aware mockMvc
+        restPreferencesMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
         // Get all the preferencesList
-        restPreferencesMockMvc.perform(get("/api/preferences?sort=id,desc"))
+        restPreferencesMockMvc.perform(get("/api/preferences?sort=id,desc")
+            .with(user("admin").roles("ADMIN")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(preferences.getId().intValue())))

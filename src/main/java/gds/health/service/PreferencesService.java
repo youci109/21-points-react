@@ -1,8 +1,12 @@
 package gds.health.service;
 
 import gds.health.domain.Preferences;
+import gds.health.domain.User;
 import gds.health.repository.PreferencesRepository;
+import gds.health.repository.UserRepository;
 import gds.health.repository.search.PreferencesSearchRepository;
+import gds.health.security.AuthoritiesConstants;
+import gds.health.security.SecurityUtils;
 import gds.health.service.dto.PreferencesDTO;
 import gds.health.service.mapper.PreferencesMapper;
 import org.slf4j.Logger;
@@ -11,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -34,10 +39,13 @@ public class PreferencesService {
 
     private final PreferencesSearchRepository preferencesSearchRepository;
 
-    public PreferencesService(PreferencesRepository preferencesRepository, PreferencesMapper preferencesMapper, PreferencesSearchRepository preferencesSearchRepository) {
+    private final UserRepository userRepository;
+
+    public PreferencesService(PreferencesRepository preferencesRepository, PreferencesMapper preferencesMapper, PreferencesSearchRepository preferencesSearchRepository, UserRepository userRepository) {
         this.preferencesRepository = preferencesRepository;
         this.preferencesMapper = preferencesMapper;
         this.preferencesSearchRepository = preferencesSearchRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -49,6 +57,8 @@ public class PreferencesService {
     public PreferencesDTO save(PreferencesDTO preferencesDTO) {
         log.debug("Request to save Preferences : {}", preferencesDTO);
         Preferences preferences = preferencesMapper.toEntity(preferencesDTO);
+        User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().orElse(null)).orElse(null);
+        preferences.setUser(user);
         preferences = preferencesRepository.save(preferences);
         PreferencesDTO result = preferencesMapper.toDto(preferences);
         preferencesSearchRepository.save(preferences);
@@ -63,9 +73,19 @@ public class PreferencesService {
     @Transactional(readOnly = true)
     public List<PreferencesDTO> findAll() {
         log.debug("Request to get all Preferences");
-        return preferencesRepository.findAll().stream()
-            .map(preferencesMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
+        List<PreferencesDTO> preferencesDTO = new ArrayList<>();
+        if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            preferencesDTO = preferencesRepository.findAll().stream()
+                .map(preferencesMapper::toDto)
+                .collect(Collectors.toCollection(LinkedList::new));
+        } else {
+            PreferencesDTO userPreferencesDTO = getUserPreferences();
+            // don't return default value of 10 points in this method
+            if (userPreferencesDTO.getId() != null) {
+                preferencesDTO.add(userPreferencesDTO);
+            }
+        }
+        return preferencesDTO;
     }
 
 
@@ -106,5 +126,23 @@ public class PreferencesService {
             .stream(preferencesSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .map(preferencesMapper::toDto)
             .collect(Collectors.toList());
+    }
+
+    /**
+     *  获取用户设置
+     * @return 用户设置
+     */
+    public PreferencesDTO getUserPreferences() {
+        String username = SecurityUtils.getCurrentUserLogin().get();
+        log.debug("Request to get User Preferences : {}",username);
+        Optional<Preferences> preferences = preferencesRepository.findOneByUserLogin(username);
+
+        if(preferences.isPresent()){
+           return preferences.map(preferencesMapper::toDto).get();
+        } else {
+            PreferencesDTO defaultPreferences = new PreferencesDTO();
+            defaultPreferences.setWeeklyGoal(10); // default
+            return defaultPreferences;
+        }
     }
 }
