@@ -5,11 +5,13 @@ import { cleanEntity } from 'app/shared/util/entity-utils';
 import { REQUEST, SUCCESS, FAILURE } from 'app/shared/reducers/action-type.util';
 
 import { IPoints, defaultValue } from 'app/shared/model/points.model';
+import { IPointsThisWeek } from 'app/shared/model/points-this-week.model';
 
 export const ACTION_TYPES = {
   SEARCH_POINTS: 'points/SEARCH_POINTS',
   FETCH_POINTS_LIST: 'points/FETCH_POINTS_LIST',
   FETCH_POINTS: 'points/FETCH_POINTS',
+  FETCH_POINTS_THIS_WEEK: 'points/FETCH_POINTS_THIS_WEEK',
   CREATE_POINTS: 'points/CREATE_POINTS',
   UPDATE_POINTS: 'points/UPDATE_POINTS',
   DELETE_POINTS: 'points/DELETE_POINTS',
@@ -23,7 +25,8 @@ const initialState = {
   entity: defaultValue,
   updating: false,
   totalItems: 0,
-  updateSuccess: false
+  updateSuccess: false,
+  pointsThisWeek: [] as ReadonlyArray<IPointsThisWeek>
 };
 
 export type PointsState = Readonly<typeof initialState>;
@@ -35,6 +38,7 @@ export default (state: PointsState = initialState, action): PointsState => {
     case REQUEST(ACTION_TYPES.SEARCH_POINTS):
     case REQUEST(ACTION_TYPES.FETCH_POINTS_LIST):
     case REQUEST(ACTION_TYPES.FETCH_POINTS):
+    case REQUEST(ACTION_TYPES.FETCH_POINTS_THIS_WEEK):
       return {
         ...state,
         errorMessage: null,
@@ -53,6 +57,7 @@ export default (state: PointsState = initialState, action): PointsState => {
     case FAILURE(ACTION_TYPES.SEARCH_POINTS):
     case FAILURE(ACTION_TYPES.FETCH_POINTS_LIST):
     case FAILURE(ACTION_TYPES.FETCH_POINTS):
+    case FAILURE(ACTION_TYPES.FETCH_POINTS_THIS_WEEK):
     case FAILURE(ACTION_TYPES.CREATE_POINTS):
     case FAILURE(ACTION_TYPES.UPDATE_POINTS):
     case FAILURE(ACTION_TYPES.DELETE_POINTS):
@@ -84,6 +89,12 @@ export default (state: PointsState = initialState, action): PointsState => {
         updating: false,
         updateSuccess: true,
         entity: action.payload.data
+      };
+    case SUCCESS(ACTION_TYPES.FETCH_POINTS_THIS_WEEK):
+      return {
+        ...state,
+        loading: false,
+        pointsThisWeek: action.payload.data
       };
     case SUCCESS(ACTION_TYPES.DELETE_POINTS):
       return {
@@ -124,6 +135,14 @@ export const getEntity: ICrudGetAction<IPoints> = id => {
   return {
     type: ACTION_TYPES.FETCH_POINTS,
     payload: axios.get<IPoints>(requestUrl)
+  };
+};
+
+export const getPointsThisWeek: ICrudGetAllAction<IPointsThisWeek> = () => {
+  const requestUrl = `${apiUrl}-this-week`;
+  return {
+    type: ACTION_TYPES.FETCH_POINTS_THIS_WEEK,
+    payload: axios.get<IPointsThisWeek>(requestUrl)
   };
 };
 
