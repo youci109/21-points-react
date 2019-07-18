@@ -167,6 +167,12 @@ export class BloodPressureUpdate extends React.Component<IBloodPressureUpdatePro
                   &nbsp;
                   <span className="d-none d-md-inline">Back</span>
                 </Button>
+                &nbsp;
+                <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+                  <FontAwesomeIcon icon="save" />
+                  &nbsp;
+                  <Translate contentKey="entity.action.save">Save</Translate>
+                </Button>
               </AvForm>
             )}
           </Col>
