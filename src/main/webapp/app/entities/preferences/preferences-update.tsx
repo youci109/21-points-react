@@ -67,7 +67,7 @@ export class PreferencesUpdate extends React.Component<IPreferencesUpdateProps, 
   };
 
   handleClose = () => {
-    this.props.history.push('/entity/preferences');
+    this.props.history.goBack();
   };
 
   render() {
@@ -144,7 +144,7 @@ export class PreferencesUpdate extends React.Component<IPreferencesUpdateProps, 
                     </AvInput>
                   </AvGroup>
                 )}
-                <Button tag={Link} id="cancel-save" to="/entity/preferences" replace color="info">
+                <Button id="cancel-save" replace color="info" onClick={this.handleClose}>
                   <FontAwesomeIcon icon="arrow-left" />
                   &nbsp;
                   <span className="d-none d-md-inline">

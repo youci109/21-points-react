@@ -4,11 +4,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Translate } from 'react-jhipster';
 import { connect } from 'react-redux';
-import { Row, Col, Alert, Progress } from 'reactstrap';
+import { Row, Col, Alert, Progress, Button } from 'reactstrap';
 
 import { IRootState } from 'app/shared/reducers';
 import { getSession } from 'app/shared/reducers/authentication';
-import { getUserWeeklyGoal } from 'app/entities/preferences/preferences.reducer';
+import { getUserWeeklyGoal, getEntities } from 'app/entities/preferences/preferences.reducer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getLoginUrl } from 'app/shared/util/url-utils';
 import PointsHome from 'app/entities/points/points-home';
@@ -22,6 +22,7 @@ export class Home extends React.Component<IHomeProp> {
     this.props.getSession();
     if (this.props.account && this.props.account.login) {
       this.getUserWeeklyGoal();
+      this.props.getEntities();
     }
   }
 
@@ -33,6 +34,10 @@ export class Home extends React.Component<IHomeProp> {
     ) {
       this.getUserWeeklyGoal();
     }
+
+    if (this.props.preferences.length === 0 || this.props.preferences.length !== prevProps.preferences.length) {
+      this.props.getEntities();
+    }
   }
 
   getUserWeeklyGoal = () => {
@@ -40,7 +45,7 @@ export class Home extends React.Component<IHomeProp> {
   };
 
   render() {
-    const { account, pointsThisWeek, userWeeklyGoal } = this.props;
+    const { account, pointsThisWeek, userWeeklyGoal, preferences } = this.props;
     return (
       <Row>
         <Col md="4" className="d-none d-md-inline">
@@ -68,6 +73,15 @@ export class Home extends React.Component<IHomeProp> {
               <PointsHome pointsThisWeek={pointsThisWeek} userWeeklyGoal={userWeeklyGoal} />
               <BloodPressureHome />
               <WeigthHome />
+              {preferences.length !== 0 && (
+                <Row>
+                  <Col md="12" className="mt-2">
+                    <Button tag={Link} to={`entity/preferences/${preferences[0].id}/edit`} className="float-right" color="link" size="sm">
+                      <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit Preferences</span>
+                    </Button>
+                  </Col>
+                </Row>
+              )}
               {account && <p>You are logged in as user {account.login}</p>}
             </div>
           ) : (
@@ -97,12 +111,14 @@ const mapStateToProps = storeState => ({
   account: storeState.authentication.account,
   isAuthenticated: storeState.authentication.isAuthenticated,
   pointsThisWeek: storeState.points.pointsThisWeek,
-  userWeeklyGoal: storeState.preferences.userWeeklyGoal
+  userWeeklyGoal: storeState.preferences.userWeeklyGoal,
+  preferences: storeState.preferences.entities
 });
 
 const mapDispatchToProps = {
   getSession,
-  getUserWeeklyGoal
+  getUserWeeklyGoal,
+  getEntities
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;
