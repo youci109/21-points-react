@@ -3,12 +3,31 @@
 // Import Bootstrap source files from node_modules
 @import 'node_modules/bootstrap/scss/bootstrap';
 @import '~bootswatch/dist/lumen/bootswatch';
+@import 'bootstrap-variables';
+// Import Bootstrap source files from node_modules
+//@import 'node_modules/bootstrap/scss/bootstrap';
+
 body {
-  margin: 0;
+  font-size: 0.9rem;
+}
+
+body,
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 300;
 }
 
 a {
-  color: #533f03;
+  //color: #533f03;
+  //font-weight: bold;
+  color: $primary-color;
+  text-decoration: none;
+  background-color: transparent;
+}
+
+strong {
   font-weight: bold;
 }
 
@@ -31,7 +50,7 @@ a {
     overflow-x: hidden;
     padding: 1rem;
     .card {
-      padding: 1rem;
+      //padding: 1rem;
     }
     .view-routes {
       height: 100%;
@@ -40,6 +59,12 @@ a {
       }
     }
   }
+}
+
+.jh-card {
+  padding: 1.5%;
+  margin-top: 35px;
+  border: none;
 }
 
 .fullscreen {
@@ -83,6 +108,26 @@ Custom button styles
   }
 }
 
+.btn {
+  font-size: 0.9rem;
+}
+
+.btn-sm {
+  font-size: 0.7875rem;
+}
+
+.btn-primary {
+  background-color: $primary-color;
+}
+
+.btn-info {
+  background-color: #03a9f4;
+}
+
+.btn-link {
+  color: $primary-color;
+}
+
 /* ==========================================================================
 Generic styles
 ========================================================================== */
@@ -95,7 +140,7 @@ Generic styles
 /* other generic styles */
 
 .title {
-  font-size: 1.25em;
+  font-size: 1.125em;
   margin: 1px 10px 1px 10px;
 }
 
@@ -126,6 +171,11 @@ Generic styles
 
 .preserve-space {
   white-space: pre-wrap;
+}
+
+.alert-login {
+  color: #007bff;
+  text-decoration: none !important;
 }
 
 /* padding helpers */
