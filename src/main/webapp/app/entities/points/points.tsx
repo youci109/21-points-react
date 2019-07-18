@@ -108,9 +108,6 @@ export class Points extends React.Component<IPointsProps, IPointsState> {
     const { pointsList, match, totalItems } = this.props;
     return (
       <div>
-        <h2 id="points-heading">
-          <Translate contentKey="twentyOnePointsReactApp.points.home.title">Points</Translate>
-        </h2>
         <Row>
           <Col sm="8">
             <h2 id="points-heading">
@@ -129,7 +126,7 @@ export class Points extends React.Component<IPointsProps, IPointsState> {
                     placeholder={translate('twentyOnePointsReactApp.points.home.search')}
                   />
                   <Button className="input-group-addon">
-                    <FontAwesomeIcon icon="check" />
+                    <FontAwesomeIcon icon="search" />
                   </Button>
                   &nbsp;
                   <Button type="reset" className="input-group-addon" onClick={this.clear}>

@@ -15,6 +15,9 @@ import { IBloodPressure } from 'app/shared/model/blood-pressure.model';
 // tslint:disable-next-line:no-unused-variable
 import { convertDateTimeFromServer, convertDateTimeToServer } from 'app/shared/util/date-utils';
 import { mapIdList } from 'app/shared/util/entity-utils';
+import moment from 'moment';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 export interface IBloodPressureUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
@@ -65,11 +68,11 @@ export class BloodPressureUpdate extends React.Component<IBloodPressureUpdatePro
   };
 
   handleClose = () => {
-    this.props.history.push('/entity/blood-pressure');
+    this.props.history.goBack();
   };
 
   render() {
-    const { bloodPressureEntity, users, loading, updating } = this.props;
+    const { bloodPressureEntity, users, loading, updating, isAdmin } = this.props;
     const { isNew } = this.state;
 
     return (
@@ -107,7 +110,9 @@ export class BloodPressureUpdate extends React.Component<IBloodPressureUpdatePro
                     className="form-control"
                     name="timestamp"
                     placeholder={'YYYY-MM-DD HH:mm'}
-                    value={isNew ? null : convertDateTimeFromServer(this.props.bloodPressureEntity.timestamp)}
+                    value={
+                      isNew ? convertDateTimeFromServer(moment.now()) : convertDateTimeFromServer(this.props.bloodPressureEntity.timestamp)
+                    }
                     validate={{
                       required: { value: true, errorMessage: translate('entity.validation.required') }
                     }}
@@ -143,35 +148,24 @@ export class BloodPressureUpdate extends React.Component<IBloodPressureUpdatePro
                     }}
                   />
                 </AvGroup>
-                <AvGroup>
-                  <Label for="blood-pressure-user">
-                    <Translate contentKey="twentyOnePointsReactApp.bloodPressure.user">User</Translate>
-                  </Label>
-                  <AvInput id="blood-pressure-user" type="select" className="form-control" name="userId" required>
-                    {users
-                      ? users.map(otherEntity => (
-                          <option value={otherEntity.id} key={otherEntity.id}>
-                            {otherEntity.login}
-                          </option>
-                        ))
-                      : null}
-                  </AvInput>
-                  <AvFeedback>
-                    <Translate contentKey="entity.validation.required">This field is required.</Translate>
-                  </AvFeedback>
-                </AvGroup>
-                <Button tag={Link} id="cancel-save" to="/entity/blood-pressure" replace color="info">
+                {isAdmin && (
+                  <AvGroup>
+                    <Label for="user.login">User</Label>
+                    <AvInput id="blood-pressure-user" type="select" className="form-control" name="userId">
+                      {users
+                        ? users.map(otherEntity => (
+                            <option value={otherEntity.id} key={otherEntity.id}>
+                              {otherEntity.login}
+                            </option>
+                          ))
+                        : null}
+                    </AvInput>
+                  </AvGroup>
+                )}
+                <Button id="cancel-save" replace color="info" onClick={this.handleClose}>
                   <FontAwesomeIcon icon="arrow-left" />
                   &nbsp;
-                  <span className="d-none d-md-inline">
-                    <Translate contentKey="entity.action.back">Back</Translate>
-                  </span>
-                </Button>
-                &nbsp;
-                <Button color="primary" id="save-entity" type="submit" disabled={updating}>
-                  <FontAwesomeIcon icon="save" />
-                  &nbsp;
-                  <Translate contentKey="entity.action.save">Save</Translate>
+                  <span className="d-none d-md-inline">Back</span>
                 </Button>
               </AvForm>
             )}
@@ -187,7 +181,8 @@ const mapStateToProps = (storeState: IRootState) => ({
   bloodPressureEntity: storeState.bloodPressure.entity,
   loading: storeState.bloodPressure.loading,
   updating: storeState.bloodPressure.updating,
-  updateSuccess: storeState.bloodPressure.updateSuccess
+  updateSuccess: storeState.bloodPressure.updateSuccess,
+  isAdmin: hasAnyAuthority(storeState.authentication.account.authorities, [AUTHORITIES.ADMIN])
 });
 
 const mapDispatchToProps = {
