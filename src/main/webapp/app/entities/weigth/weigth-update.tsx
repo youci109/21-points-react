@@ -15,6 +15,9 @@ import { IWeigth } from 'app/shared/model/weigth.model';
 // tslint:disable-next-line:no-unused-variable
 import { convertDateTimeFromServer, convertDateTimeToServer } from 'app/shared/util/date-utils';
 import { mapIdList } from 'app/shared/util/entity-utils';
+import moment from 'moment';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 export interface IWeigthUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
@@ -65,11 +68,11 @@ export class WeigthUpdate extends React.Component<IWeigthUpdateProps, IWeigthUpd
   };
 
   handleClose = () => {
-    this.props.history.push('/entity/weigth');
+    this.props.history.goBack();
   };
 
   render() {
-    const { weigthEntity, users, loading, updating } = this.props;
+    const { weigthEntity, users, loading, updating, isAdmin } = this.props;
     const { isNew } = this.state;
 
     return (
@@ -105,7 +108,7 @@ export class WeigthUpdate extends React.Component<IWeigthUpdateProps, IWeigthUpd
                     className="form-control"
                     name="timestamp"
                     placeholder={'YYYY-MM-DD HH:mm'}
-                    value={isNew ? null : convertDateTimeFromServer(this.props.weigthEntity.timestamp)}
+                    value={isNew ? convertDateTimeFromServer(moment.now()) : convertDateTimeFromServer(this.props.weigthEntity.timestamp)}
                     validate={{
                       required: { value: true, errorMessage: translate('entity.validation.required') }
                     }}
@@ -126,24 +129,21 @@ export class WeigthUpdate extends React.Component<IWeigthUpdateProps, IWeigthUpd
                     }}
                   />
                 </AvGroup>
-                <AvGroup>
-                  <Label for="weigth-user">
-                    <Translate contentKey="twentyOnePointsReactApp.weigth.user">User</Translate>
-                  </Label>
-                  <AvInput id="weigth-user" type="select" className="form-control" name="userId" required>
-                    {users
-                      ? users.map(otherEntity => (
-                          <option value={otherEntity.id} key={otherEntity.id}>
-                            {otherEntity.login}
-                          </option>
-                        ))
-                      : null}
-                  </AvInput>
-                  <AvFeedback>
-                    <Translate contentKey="entity.validation.required">This field is required.</Translate>
-                  </AvFeedback>
-                </AvGroup>
-                <Button tag={Link} id="cancel-save" to="/entity/weigth" replace color="info">
+                {isAdmin && (
+                  <AvGroup>
+                    <Label for="user.login">User</Label>
+                    <AvInput id="weigth-user" type="select" className="form-control" name="userId">
+                      {users
+                        ? users.map(otherEntity => (
+                            <option value={otherEntity.id} key={otherEntity.id}>
+                              {otherEntity.login}
+                            </option>
+                          ))
+                        : null}
+                    </AvInput>
+                  </AvGroup>
+                )}
+                <Button id="cancel-save" replace color="info" onClick={this.handleClose}>
                   <FontAwesomeIcon icon="arrow-left" />
                   &nbsp;
                   <span className="d-none d-md-inline">
@@ -170,7 +170,8 @@ const mapStateToProps = (storeState: IRootState) => ({
   weigthEntity: storeState.weigth.entity,
   loading: storeState.weigth.loading,
   updating: storeState.weigth.updating,
-  updateSuccess: storeState.weigth.updateSuccess
+  updateSuccess: storeState.weigth.updateSuccess,
+  isAdmin: hasAnyAuthority(storeState.authentication.account.authorities, [AUTHORITIES.ADMIN])
 });
 
 const mapDispatchToProps = {
