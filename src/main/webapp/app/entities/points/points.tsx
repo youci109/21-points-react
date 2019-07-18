@@ -146,12 +146,9 @@ export class Points extends React.Component<IPointsProps, IPointsState> {
         </Row>
         <div className="table-responsive">
           {pointsList && pointsList.length > 0 ? (
-            <Table responsive>
+            <Table responsive striped>
               <thead>
                 <tr>
-                  <th className="hand" onClick={this.sort('id')}>
-                    <Translate contentKey="global.field.id">ID</Translate> <FontAwesomeIcon icon="sort" />
-                  </th>
                   <th className="hand" onClick={this.sort('date')}>
                     <Translate contentKey="twentyOnePointsReactApp.points.date">Date</Translate> <FontAwesomeIcon icon="sort" />
                   </th>
@@ -178,11 +175,8 @@ export class Points extends React.Component<IPointsProps, IPointsState> {
                   <tr key={`entity-${i}`}>
                     <td>
                       <Button tag={Link} to={`${match.url}/${points.id}`} color="link" size="sm">
-                        {points.id}
+                        <TextFormat type="date" value={points.date} format={APP_LOCAL_DATE_FORMAT} />
                       </Button>
-                    </td>
-                    <td>
-                      <TextFormat type="date" value={points.date} format={APP_LOCAL_DATE_FORMAT} />
                     </td>
                     <td>{points.excercise}</td>
                     <td>{points.meals}</td>
