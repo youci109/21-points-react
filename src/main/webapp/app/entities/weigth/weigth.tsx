@@ -2,7 +2,7 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import { Button, InputGroup, Col, Row, Table } from 'reactstrap';
+import { Button, InputGroup, Col, Row, Table, Tooltip } from 'reactstrap';
 import { AvForm, AvGroup, AvInput } from 'availity-reactstrap-validation';
 // tslint:disable-next-line:no-unused-variable
 import { Translate, translate, ICrudSearchAction, ICrudGetAllAction, TextFormat, getSortState, IPaginationBaseState } from 'react-jhipster';
@@ -19,11 +19,13 @@ export interface IWeigthProps extends StateProps, DispatchProps, RouteComponentP
 
 export interface IWeigthState extends IPaginationBaseState {
   search: string;
+  tooltipOpen: boolean;
 }
 
 export class Weigth extends React.Component<IWeigthProps, IWeigthState> {
   state: IWeigthState = {
     search: '',
+    tooltipOpen: false,
     ...getSortState(this.props.location, ITEMS_PER_PAGE)
   };
 
@@ -45,6 +47,12 @@ export class Weigth extends React.Component<IWeigthProps, IWeigthState> {
         this.props.getSearchEntities(search, activePage - 1, itemsPerPage, `${sort},${order}`);
       });
     }
+  };
+
+  toggleTooltip = () => {
+    this.setState({
+      tooltipOpen: !this.state.tooltipOpen
+    });
   };
 
   clear = () => {
@@ -94,16 +102,11 @@ export class Weigth extends React.Component<IWeigthProps, IWeigthState> {
     const { weigthList, match } = this.props;
     return (
       <div>
-        <h2 id="weigth-heading">
-          <Translate contentKey="twentyOnePointsReactApp.weigth.home.title">Weigths</Translate>
-          <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;
-            <Translate contentKey="twentyOnePointsReactApp.weigth.home.createLabel">Create new Weigth</Translate>
-          </Link>
-        </h2>
         <Row>
-          <Col sm="12">
+          <Col sm="8">
+            <h2 id="weigth-heading">Weigths</h2>
+          </Col>
+          <Col sm="4">
             <AvForm onSubmit={this.search}>
               <AvGroup>
                 <InputGroup>
@@ -117,9 +120,17 @@ export class Weigth extends React.Component<IWeigthProps, IWeigthState> {
                   <Button className="input-group-addon">
                     <FontAwesomeIcon icon="search" />
                   </Button>
+                  &nbsp;
                   <Button type="reset" className="input-group-addon" onClick={this.clear}>
                     <FontAwesomeIcon icon="trash" />
                   </Button>
+                  &nbsp;
+                  <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
+                    <FontAwesomeIcon icon="plus" />
+                  </Link>
+                  <Tooltip placement="top" isOpen={this.state.tooltipOpen} target="jh-create-entity" toggle={this.toggleTooltip}>
+                    Add Weigth
+                  </Tooltip>
                 </InputGroup>
               </AvGroup>
             </AvForm>
