@@ -146,7 +146,7 @@ export class Weigth extends React.Component<IWeigthProps, IWeigthState> {
             initialLoad={false}
           >
             {weigthList && weigthList.length > 0 ? (
-              <Table responsive striped>
+              <Table responsive striped size="sm">
                 <thead>
                   <tr>
                     <th className="hand" onClick={this.sort('id')}>

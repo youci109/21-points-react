@@ -146,7 +146,7 @@ export class BloodPressure extends React.Component<IBloodPressureProps, IBloodPr
             initialLoad={false}
           >
             {bloodPressureList && bloodPressureList.length > 0 ? (
-              <Table responsive striped>
+              <Table responsive striped size="sm">
                 <thead>
                   <tr>
                     <th className="hand" onClick={this.sort('timestamp')}>

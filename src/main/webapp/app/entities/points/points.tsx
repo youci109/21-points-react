@@ -146,7 +146,7 @@ export class Points extends React.Component<IPointsProps, IPointsState> {
         </Row>
         <div className="table-responsive">
           {pointsList && pointsList.length > 0 ? (
-            <Table responsive striped>
+            <Table responsive striped size="sm">
               <thead>
                 <tr>
                   <th className="hand" onClick={this.sort('date')}>

@@ -92,7 +92,7 @@ export class Preferences extends React.Component<IPreferencesProps, IPreferences
         </Row>
         <div className="table-responsive">
           {preferencesList && preferencesList.length > 0 ? (
-            <Table responsive>
+            <Table responsive size="sm">
               <thead>
                 <tr>
                   <th>
