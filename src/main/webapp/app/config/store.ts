@@ -16,6 +16,9 @@ const defaultMiddlewares = [
   loadingBarMiddleware(),
   loggerMiddleware
 ];
+
+// const composeEnhancers = typeof window === 'object' && (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
+
 const composedMiddlewares = middlewares =>
   process.env.NODE_ENV === 'development'
     ? compose(

@@ -9,6 +9,7 @@ import PrivateRoute from 'app/shared/auth/private-route';
 import ErrorBoundaryRoute from 'app/shared/error/error-boundary-route';
 import PageNotFound from 'app/shared/error/page-not-found';
 import { AUTHORITIES } from 'app/config/constants';
+import { About } from './modules/about/about';
 
 // tslint:disable:space-in-parens
 
@@ -25,6 +26,7 @@ const Routes = () => (
       <PrivateRoute path="/admin" component={Admin} hasAnyAuthorities={[AUTHORITIES.ADMIN]} />
       <PrivateRoute path="/entity" component={Entities} hasAnyAuthorities={[AUTHORITIES.USER]} />
       <ErrorBoundaryRoute path="/" exact component={Home} />
+      <ErrorBoundaryRoute path="/about" exact component={About} />
       <ErrorBoundaryRoute component={PageNotFound} />
     </Switch>
   </div>

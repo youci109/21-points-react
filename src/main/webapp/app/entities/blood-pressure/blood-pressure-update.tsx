@@ -91,6 +91,10 @@ export class BloodPressureUpdate extends React.Component<IBloodPressureUpdatePro
             {loading ? (
               <p>Loading...</p>
             ) : (
+              /* 这里的数据回显注入采用  availity-reactstrap-validation 的 avForm 中属性model 将属性值注入表单属性
+               const bloodPressureEntity = {systolic:110, diastolic:90} 初始化数据
+                校验也采用availity-reactstrap-validation 的对reactStrap 的表单校验
+              */
               <AvForm model={isNew ? {} : bloodPressureEntity} onSubmit={this.saveEntity}>
                 {!isNew ? (
                   <AvGroup>
