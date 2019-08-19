@@ -1,6 +1,7 @@
 package gds.health.service;
 
 import gds.health.domain.Points;
+import gds.health.domain.UserPoint;
 import gds.health.repository.PointsRepository;
 import gds.health.repository.UserRepository;
 import gds.health.repository.search.PointsSearchRepository;
@@ -83,7 +84,10 @@ public class PointsService {
 //        return pointsRepository.findAll(pageable)
 //            .map(pointsMapper::toDto);
         if(SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
-            return pointsRepository.findAllByOrderByDateDesc(pageable).map(pointsMapper::toDto);
+            Page<Points> ppoints = pointsRepository.findAllByOrderByDateDesc(pageable);
+            Page<PointsDTO> pDTO= ppoints.map(pointsMapper::toDto);
+            return pDTO;
+           
         } else {
             return pointsRepository.findByUserIsCurrentUser(pageable).map(pointsMapper::toDto);
         }
@@ -159,5 +163,21 @@ public class PointsService {
 
         PointsPerWeekDTO count = new PointsPerWeekDTO(startOfWeek, numPoints);
         return count;
+    }
+
+    /**
+     *  查询用户分数排行
+     * @return
+     */
+    public List<UserPoint> findUserPointRanK() {
+         // Get current date
+         LocalDate now = LocalDate.now();
+         // Get first day of week
+         LocalDate startOfWeek = now.with(DayOfWeek.MONDAY);
+         // Get last day of week
+         LocalDate endOfWeek = now.with(DayOfWeek.SUNDAY);
+         log.debug("Looking for points between: {} and {}", startOfWeek, endOfWeek);
+        List<UserPoint> userPList = pointsRepository.findUserPointRanKBetween(startOfWeek, endOfWeek);
+        return userPList;
     }
 }

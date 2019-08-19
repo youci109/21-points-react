@@ -1,5 +1,6 @@
 package gds.health.web.rest;
 
+import gds.health.domain.UserPoint;
 import gds.health.service.PointsService;
 import gds.health.service.dto.PointsPerWeekDTO;
 import gds.health.web.rest.errors.BadRequestAlertException;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +55,9 @@ public class PointsResource {
      * {@code POST  /points} : Create a new points.
      *
      * @param pointsDTO the pointsDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new pointsDTO, or with status {@code 400 (Bad Request)} if the points has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
+     *         body the new pointsDTO, or with status {@code 400 (Bad Request)} if
+     *         the points has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/points")
@@ -65,18 +67,21 @@ public class PointsResource {
             throw new BadRequestAlertException("A new points cannot already have an ID", ENTITY_NAME, "idexists");
         }
         PointsDTO result = pointsService.save(pointsDTO);
-        return ResponseEntity.created(new URI("/api/points/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return ResponseEntity
+                .created(new URI("/api/points/" + result.getId())).headers(HeaderUtil
+                        .createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+                .body(result);
     }
 
     /**
      * {@code PUT  /points} : Updates an existing points.
      *
      * @param pointsDTO the pointsDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated pointsDTO,
-     * or with status {@code 400 (Bad Request)} if the pointsDTO is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the pointsDTO couldn't be updated.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
+     *         the updated pointsDTO, or with status {@code 400 (Bad Request)} if
+     *         the pointsDTO is not valid, or with status
+     *         {@code 500 (Internal Server Error)} if the pointsDTO couldn't be
+     *         updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/points")
@@ -86,21 +91,23 @@ public class PointsResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         PointsDTO result = pointsService.save(pointsDTO);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, pointsDTO.getId().toString()))
-            .body(result);
+        return ResponseEntity.ok().headers(
+                HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, pointsDTO.getId().toString()))
+                .body(result);
     }
 
     /**
      * {@code GET  /points} : get all the points.
      *
-     * @param pageable the pagination information.
+     * @param pageable    the pagination information.
      * @param queryParams a {@link MultiValueMap} query parameters.
-     * @param uriBuilder a {@link UriComponentsBuilder} URI builder.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of points in body.
+     * @param uriBuilder  a {@link UriComponentsBuilder} URI builder.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
+     *         of points in body.
      */
     @GetMapping("/points")
-    public ResponseEntity<List<PointsDTO>> getAllPoints(Pageable pageable, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<List<PointsDTO>> getAllPoints(Pageable pageable,
+            @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder) {
         log.debug("REST request to get a page of Points");
         Page<PointsDTO> page = pointsService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
@@ -111,12 +118,14 @@ public class PointsResource {
      * {@code GET  /points/:id} : get the "id" points.
      *
      * @param id the id of the pointsDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the pointsDTO, or with status {@code 404 (Not Found)}.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
+     *         the pointsDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/points/{id}")
     public ResponseEntity<PointsDTO> getPoints(@PathVariable Long id) {
         log.debug("REST request to get Points : {}", id);
         Optional<PointsDTO> pointsDTO = pointsService.findOne(id);
+
         return ResponseUtil.wrapOrNotFound(pointsDTO);
     }
 
@@ -130,21 +139,24 @@ public class PointsResource {
     public ResponseEntity<Void> deletePoints(@PathVariable Long id) {
         log.debug("REST request to delete Points : {}", id);
         pointsService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity.noContent()
+                .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+                .build();
     }
 
     /**
-     * {@code SEARCH  /_search/points?query=:query} : search for the points corresponding
-     * to the query.
+     * {@code SEARCH  /_search/points?query=:query} : search for the points
+     * corresponding to the query.
      *
-     * @param query the query of the points search.
-     * @param pageable the pagination information.
+     * @param query       the query of the points search.
+     * @param pageable    the pagination information.
      * @param queryParams a {@link MultiValueMap} query parameters.
-     * @param uriBuilder a {@link UriComponentsBuilder} URI builder.
+     * @param uriBuilder  a {@link UriComponentsBuilder} URI builder.
      * @return the result of the search.
      */
     @GetMapping("/_search/points")
-    public ResponseEntity<List<PointsDTO>> searchPoints(@RequestParam String query, Pageable pageable, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<List<PointsDTO>> searchPoints(@RequestParam String query, Pageable pageable,
+            @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder) {
         log.debug("REST request to search for a page of Points for query {}", query);
         Page<PointsDTO> page = pointsService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
@@ -161,5 +173,16 @@ public class PointsResource {
 
         return pointsService.getPointsThisWeek();
     }
+
+    /**
+     * 查询用户周分数排行
+     * @param pageable
+     * @return 返回用户分数排行
+     */
+    @GetMapping("/User-points-Rank")
+    public List<UserPoint> findUserPointRanK(Pageable pageable){
+        return pointsService.findUserPointRanK();
+    }
+
 
 }
