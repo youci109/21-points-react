@@ -3,6 +3,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+// import javax.persistence.GeneratedValue;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
@@ -47,6 +48,10 @@ public class Points implements Serializable {
     @NotNull
     @JsonIgnoreProperties("points")
     private User user;
+
+    @Transient
+    private String uPoints;
+
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -113,6 +118,13 @@ public class Points implements Serializable {
         return notes;
     }
 
+    public String getuPoints() {
+        return uPoints;
+    }
+
+    public void setuPoints(String uPoints) {
+        this.uPoints = uPoints;
+    }
     public Points notes(String notes) {
         this.notes = notes;
         return this;
@@ -161,6 +173,8 @@ public class Points implements Serializable {
             ", meals=" + getMeals() +
             ", alcohol=" + getAlcohol() +
             ", notes='" + getNotes() + "'" +
+            ", uPoints='" + getuPoints() + "'" +
             "}";
     }
+
 }
