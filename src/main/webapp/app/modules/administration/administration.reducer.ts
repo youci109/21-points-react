@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import { REQUEST, SUCCESS, FAILURE } from 'app/shared/reducers/action-type.util';
+import { UserPoints } from 'app/shared/model/userPoints';
 
 export const ACTION_TYPES = {
   FETCH_LOGS: 'administration/FETCH_LOGS',
@@ -10,7 +11,8 @@ export const ACTION_TYPES = {
   FETCH_THREAD_DUMP: 'administration/FETCH_THREAD_DUMP',
   FETCH_CONFIGURATIONS: 'administration/FETCH_CONFIGURATIONS',
   FETCH_ENV: 'administration/FETCH_ENV',
-  FETCH_AUDITS: 'administration/FETCH_AUDITS'
+  FETCH_AUDITS: 'administration/FETCH_AUDITS',
+  FETCH_USER_RANK: 'administration/FETCH_USER_RANK'
 };
 
 const initialState = {
@@ -27,7 +29,8 @@ const initialState = {
     env: {} as any
   },
   audits: [],
-  totalItems: 0
+  totalItems: 0,
+  userRank: [] as ReadonlyArray<UserPoints>
 };
 
 export type AdministrationState = Readonly<typeof initialState>;
@@ -111,6 +114,12 @@ export default (state: AdministrationState = initialState, action): Administrati
         loading: false,
         health: action.payload.data
       };
+    case SUCCESS(ACTION_TYPES.FETCH_USER_RANK):
+      return {
+        ...state,
+        loading: false,
+        userRank: action.payload.data
+      };
     default:
       return state;
   }
@@ -169,6 +178,14 @@ export const getAudits = (page, size, sort, fromDate, toDate) => {
   }
   return {
     type: ACTION_TYPES.FETCH_AUDITS,
+    payload: axios.get(requestUrl)
+  };
+};
+
+export const getUserPointRank = () => {
+  let requestUrl = 'api/User-points-Rank';
+  return {
+    type: ACTION_TYPES.FETCH_USER_RANK,
     payload: axios.get(requestUrl)
   };
 };

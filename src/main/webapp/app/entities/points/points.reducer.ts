@@ -134,7 +134,7 @@ export const getEntity: ICrudGetAction<IPoints> = id => {
   const requestUrl = `${apiUrl}/${id}`;
   return {
     type: ACTION_TYPES.FETCH_POINTS,
-    payload: axios.get<IPoints>(requestUrl)
+    payload: axios.get('api/userPoints')
   };
 };
 

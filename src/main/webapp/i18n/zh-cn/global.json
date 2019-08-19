@@ -30,6 +30,7 @@
         "health": "服务状态",
         "configuration": "配置",
         "logs": "日志",
+        "rank": "周分数排名",
         "audits": "审核",
         "apidocs": "API",
         "database": "数据库",
