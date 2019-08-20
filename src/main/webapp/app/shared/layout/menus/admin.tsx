@@ -24,7 +24,7 @@ const adminMenuItems = (
     <MenuItem icon="tasks" to="/admin/logs">
       <Translate contentKey="global.menu.admin.logs">Logs</Translate>
     </MenuItem>
-    <MenuItem icon="sort" to="/admin/rank">
+    <MenuItem icon="road" to="/admin/rank">
       <Translate contentKey="global.menu.admin.rank">rank</Translate>
     </MenuItem>
   </>
