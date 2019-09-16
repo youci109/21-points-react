@@ -22,11 +22,10 @@ import java.util.List;
 @Repository
 public interface PointsRepository extends JpaRepository<Points, Long> {
 
+    Page<Points> findAllByOrderByDateDesc(Pageable pageable);
+
     @Query("select points from Points points where points.user.login = ?#{principal.name} order by points.date desc")
     Page<Points> findByUserIsCurrentUser(Pageable pageable);
-
-    
-    Page<Points> findAllByOrderByDateDesc(Pageable pageable);
 
     @Modifying
     List<Points> findAllByDateBetweenAndUserLogin(LocalDate firstDate, LocalDate secondDate, String user);

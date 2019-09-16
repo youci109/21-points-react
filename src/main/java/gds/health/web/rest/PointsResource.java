@@ -180,7 +180,7 @@ public class PointsResource {
      * @return 返回用户分数排行
      */
     @GetMapping("/User-points-Rank")
-    public List<UserPoint> findUserPointRanK(Pageable pageable){
+    public List<UserPoint> findUserPointRanK(Pageable pageable){  
         return pointsService.findUserPointRanK();
     }
 

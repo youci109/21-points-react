@@ -17,7 +17,6 @@ class PointRank extends React.Component<IAppProps, IState> {
 
   public render() {
     const { users } = this.props;
-    const tableHtml = users.map(user => {});
     return (
       <div>
         <Alert color="primary"> 周健康排行</Alert>
